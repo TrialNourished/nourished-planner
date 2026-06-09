@@ -3,4 +3,4 @@
   functions = "netlify/functions"
 
 [functions]
-  timeout = 30
+  timeout = 26

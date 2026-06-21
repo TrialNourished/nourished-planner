@@ -866,7 +866,7 @@ async function sendToChat(userMsg, isFirst) {
     var resp = await fetch('/api/chat', {
       method:'POST',
       headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01'},
-      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800, system:SYSTEM_RECIPE, messages:chatHistory })
+      body:JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:800, system:SYSTEM_RECIPE, messages:chatHistory })
     });
     if (!resp.ok) { var e=await resp.json().catch(()=>({})); throw new Error((e.error&&e.error.message)||'API error '+resp.status); }
     var data = await resp.json();
@@ -986,7 +986,7 @@ async function generate(customPrompt) {
     var resp = await fetch('/api/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:3200, stream:false, system:SYSTEM_PLAN, messages:[{role:'user',content:userPrompt}] })
+      body:JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:3200, stream:false, system:SYSTEM_PLAN, messages:[{role:'user',content:userPrompt}] })
     });
     if (!resp.ok) {
       var err = await resp.json().catch(function(){return{};});

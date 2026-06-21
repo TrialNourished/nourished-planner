@@ -985,8 +985,8 @@ async function generate(customPrompt) {
   try {
     var resp = await fetch('/api/chat',{
       method:'POST',
-      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01'},
-      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:3200, stream:true, system:SYSTEM_PLAN, messages:[{role:'user',content:userPrompt}] })
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:3200, stream:false, system:SYSTEM_PLAN, messages:[{role:'user',content:userPrompt}] })
     });
     if (!resp.ok) {
       var err = await resp.json().catch(function(){return{};});
@@ -994,24 +994,8 @@ async function generate(customPrompt) {
       if (resp.status===429) throw new Error('Too many requests — please wait a moment and try again.');
       throw new Error((err.error&&err.error.message)||'API error '+resp.status);
     }
-    var reader = resp.body.getReader();
-    var dec = new TextDecoder();
-    var buf = '', fullText = '';
-    while (true) {
-      var chunk = await reader.read();
-      if (chunk.done) break;
-      buf += dec.decode(chunk.value,{stream:true});
-      var lines = buf.split('\n');
-      buf = lines.pop();
-      for (var i=0;i<lines.length;i++) {
-        var line = lines[i];
-        if (line.startsWith('data: ')) {
-          var d = line.slice(6).trim();
-          if (d==='[DONE]') break;
-          try { var j=JSON.parse(d); if (j.type==='content_block_delta'&&j.delta&&j.delta.text) fullText+=j.delta.text; } catch(e){}
-        }
-      }
-    }
+    var data = await resp.json();
+    var fullText = data.content.map(function(b){return b.text||'';}).join('');
     var cleaned = fullText.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
     planCard.innerHTML = cleaned;
     document.getElementById('actionBar').classList.add('show');

@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const body = req.body;
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
 
     const upstream = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

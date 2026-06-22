@@ -285,7 +285,7 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
   <!-- No-cook days selector -->
   <div class="section" id="noCookSection">
     <div class="section-label">How many nights would you prefer not to cook?</div>
-    <div class="section-hint">On no-cook nights, I'll suggest healthier ready-made meals, eating out choices, or convenience options with guidance on what to look for.</div>
+    <div class="section-hint">On no-cook nights, I can suggest leftovers, batch cook meals, ready-made options, or eating out — select all that apply.</div>
     <div class="chips">
       <div class="chip nocook-chip" data-g="nocook" onclick="one(this);updateNoCookInfo()">0 — I'll cook every night</div>
       <div class="chip nocook-chip" data-g="nocook" onclick="one(this);updateNoCookInfo()">1 night</div>
@@ -296,9 +296,10 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
     <div id="noCookTypeSection" style="display:none;margin-top:12px;">
       <div class="section-hint" style="margin-bottom:8px;">On those nights, what works best for you? (select all that apply)</div>
       <div class="chips">
+        <div class="chip" data-g="nocooktype" onclick="tog(this)">Leftovers from a previous night</div>
+        <div class="chip" data-g="nocooktype" onclick="tog(this)">From a batch cook</div>
         <div class="chip" data-g="nocooktype" onclick="tog(this)">Ready-made meals (supermarket / delivery)</div>
         <div class="chip" data-g="nocooktype" onclick="tog(this)">Eating out / takeaway</div>
-        <div class="chip" data-g="nocooktype" onclick="tog(this)">Mix of both</div>
       </div>
     </div>
   </div>
@@ -338,7 +339,6 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
   <div class="section">
     <div class="section-label">I would like more of</div>
     <div class="chips">
-      <div class="chip all-chip" data-g="more" data-all="true" onclick="toggleAll(this)">All of the above</div>
       <div class="chip" data-g="more" onclick="tog(this)">Vegetables</div>
       <div class="chip" data-g="more" onclick="tog(this)">Legumes</div>
       <div class="chip" data-g="more" onclick="tog(this)">Oily fish (omega-3)</div>
@@ -349,13 +349,13 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
       <div class="chip" data-g="more" onclick="tog(this)">Fibre</div>
       <div class="chip" data-g="more" onclick="tog(this)">Low GI wholegrains</div>
       <div class="chip" data-g="more" onclick="tog(this)">Healthy fats</div>
+      <div class="chip all-chip" data-g="more" data-all="true" onclick="toggleAll(this)">All of the above</div>
     </div>
   </div>
 
   <div class="section">
     <div class="section-label">I would like less of</div>
     <div class="chips">
-      <div class="chip all-chip" data-g="less" data-all="true" onclick="toggleAll(this)">All of the above</div>
       <div class="chip" data-g="less" onclick="tog(this)">Salt</div>
       <div class="chip" data-g="less" onclick="tog(this)">Takeaway meals</div>
       <div class="chip" data-g="less" onclick="tog(this)">Ultra-processed foods</div>
@@ -364,6 +364,7 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
       <div class="chip" data-g="less" onclick="tog(this)">Saturated fat</div>
       <div class="chip" data-g="less" onclick="tog(this)">Red meat</div>
       <div class="chip" data-g="less" onclick="tog(this)">High GI carbohydrates</div>
+      <div class="chip all-chip" data-g="less" data-all="true" onclick="toggleAll(this)">All of the above</div>
     </div>
   </div>
 
@@ -417,7 +418,7 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
       <div class="chip dislike-chip" data-g="dislike" onclick="tog(this)">Leafy greens</div>
       <div class="chip dislike-chip" data-g="dislike" onclick="tog(this)">Cooked vegetables</div>
       <div class="chip dislike-chip" data-g="dislike" onclick="tog(this)">Spicy foods</div>
-      <div class="chip dislike-chip" data-g="dislike" onclick="tog(this)">Offal / organ meats</div>
+
     </div>
   </div>
 
@@ -444,7 +445,13 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
       <div class="chip" data-g="time" onclick="one(this)">15 to 30 mins</div>
       <div class="chip" data-g="time" onclick="one(this)">30 to 60 mins</div>
       <div class="chip" data-g="time" onclick="one(this)">Over 60 mins</div>
-      <div class="chip" data-g="time" onclick="one(this)">Happy to batch cook on weekends</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Batch cooking</div>
+    <div class="chips">
+      <div class="chip" data-g="batchcook" onclick="tog(this)">Happy to batch cook on weekends</div>
     </div>
   </div>
 
@@ -651,7 +658,18 @@ Lemon Ricotta Crepes with Blackberry Compote — https://www.cookwithjess.com.au
 Oregano Beef Flatbreads with Tahini Yoghurt — https://www.cookwithjess.com.au/heart-healthy-catalogue/oregano-beef-with-roasted-radish-pickled-cucumber-tahini-yoghurt-flatbreads
 Cocoa Crunch Energy Bites — https://www.cookwithjess.com.au/snacks-breakfast-catalogue/cocoa-crunch-energy-bites
 
-For Maggie Beer, Donna Hay, RecipeTin Eats, Taste.com.au, Australian Women's Weekly, Healthy Food Guide, SBS Food, ABC Everyday: use real recipes that genuinely exist on those sites. If uncertain of a specific URL, link to the homepage of that site rather than risk a broken link.
+RECIPE LINK RULES — CRITICAL:
+Every recipe must link to a specific recipe page, never to a homepage or category page.
+
+For MOBILE DIETITIAN and COOK WITH JESS: only use the exact URLs listed above. Do not invent URLs.
+
+For ALL OTHER SITES (RecipeTin Eats, Taste, Donna Hay, Maggie Beer, etc):
+- Only include a URL if you are confident the specific recipe exists at that URL
+- If you are not certain of the exact URL, do NOT link to the homepage — instead use a Google search link in this format:
+  https://www.google.com/search?q=site:recipetineats.com+lemon+chicken+pasta
+  (replace the site and search terms as appropriate)
+- Label search links clearly: <a href="..." class="recipe-link">[Search for this recipe]</a>
+- Never fabricate a direct recipe URL — a search link is always better than a broken link
 
 LUNCH PHILOSOPHY — CRITICAL:
 Lunch must be genuinely easy — something people can prepare before work (5–10 minutes of assembly, not cooking) or grab quickly. Think: build a sandwich, throw ingredients in a bowl, open a tin. Lunches should not require cooking at lunchtime.
@@ -670,10 +688,13 @@ Expand your lunch recipe search to include: Maggie Beer (maggiebeer.com.au), Rec
 
 NO-COOK DINNER GUIDANCE:
 When a dinner is a no-cook night, use the <div class="no-cook-meal"> format. Provide:
-- A specific, actionable suggestion (not vague — e.g. "YouFoodz Chicken Tikka Masala" or "Grilled fish at a Thai restaurant with steamed rice and stir-fried vegetables")
+- A specific, actionable suggestion (not vague — e.g. "YouFoodz Chicken Tikka Masala" or "Leftover Wednesday chicken tray bake — slice cold over a green salad with sourdough" or "Batch-cooked lentil soup from the freezer — reheat and serve with grainy toast")
 - A brief "Why this works" explanation using the <div class="no-cook-why"> element
-- For ready-made meals: prefer YouFoodz (available in supermarkets), Soulara (delivery), Garden of Goodness (delivery) — look for meals with whole food ingredients, minimal additives, adequate protein, low GI carbs, half the meal being colourful vegetables, low sodium (ideally under 600mg per serve)
-- For eating out: suggest cuisines with naturally healthier options (Japanese, Vietnamese, Thai, Greek/Mediterranean, Indian with careful choices) over high-fried cuisines. Always suggest swaps: e.g. swap hot chips for salad or steamed rice, ask for dressing on the side, choose grilled over fried, choose broth-based over cream-based
+- Vary the no-cook dinner types across the week based on the user's no-cook preference. If multiple types are selected, rotate across them:
+  * "Leftovers from a previous night" — reference a specific meal from earlier in the plan, suggest how to serve it differently if needed
+  * "From a batch cook" — suggest a specific batch-cooked component from the plan (e.g. soups, grains, legumes, roasted veg) and how to assemble it into a quick dinner
+  * "Ready-made meals" — prefer YouFoodz (available in supermarkets), Soulara (delivery), Garden of Goodness (delivery) — look for meals with whole food ingredients, minimal additives, adequate protein, low GI carbs, half the meal being colourful vegetables, low sodium (ideally under 600mg per serve)
+  * "Eating out / takeaway" — suggest cuisines with naturally healthier options (Japanese, Vietnamese, Thai, Greek/Mediterranean, Indian with careful choices). Always suggest swaps: e.g. swap hot chips for salad or steamed rice, ask for dressing on the side, choose grilled over fried, choose broth-based over cream-based
 - For all no-cook nights: note that low GI carbs can be harder — offer practical tips (e.g. choose sushi rice over fried rice, ask for wholegrain bread at a café, choose legume-based dishes)
 - Breakfast and lunch on no-cook days remain normal meal suggestions unless the user has specified they want to buy all meals
 
@@ -913,6 +934,7 @@ function buildProfile() {
     dislike: sel('dislike').join(', ') || 'None',
     gradual: sel('gradual').join(', ') || 'None',
     time: sel('time')[0] || 'Not specified',
+    batchcook: sel('batchcook')[0] || '',
     skill: sel('skill')[0] || 'Not specified',
     budget: sel('budget')[0] || 'Not specified',
     leftovers: sel('leftovers')[0] || 'Not specified',
@@ -944,6 +966,7 @@ function buildPrompt(p) {
   prompt += 'Dislikes (avoid entirely): ' + p.dislike + '\n';
   prompt += 'Gradually building (small amounts, 1–2 meals only): ' + p.gradual + '\n';
   prompt += 'Cooking time: ' + p.time + '\n';
+  if (p.batchcook) prompt += 'Batch cooking: Happy to batch cook on weekends\n';
   prompt += 'Skill level: ' + p.skill + '\n';
   prompt += 'Budget: ' + p.budget + '\n';
   prompt += 'Leftovers: ' + p.leftovers + '\n';
@@ -1036,7 +1059,7 @@ function submitRedo() {
   if (notes) feedback.push('Extra feedback: '+notes);
   var p = lastProfile;
   var prompt = 'Please create a completely new 7-day Nourished meal plan — clearly different from the previous one.\n\nPROFILE:\n'
-    +'Health conditions: '+p.conditions+'\nNo-cook nights: '+p.nocook+'\nNo-cook type: '+p.nocooktype
+    +'Health conditions: '+p.conditions+'\nNo-cook nights: '+p.nocook+'\nNo-cook type: '+p.nocooktype+'\nBatch cooking: '+(p.batchcook||'No')
     +'\nProteins: '+p.protein+'\nCuisines: '+p.cuisine+'\nMore of: '+p.more+'\nLess of: '+p.less
     +'\nAllergies: '+p.allergy+'\nDislikes: '+p.dislike+'\nGradual: '+p.gradual
     +'\nTime: '+p.time+'\nSkill: '+p.skill+'\nBudget: '+p.budget+'\nLeftovers: '+p.leftovers

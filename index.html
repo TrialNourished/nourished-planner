@@ -215,7 +215,13 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
   <p class="header-sub">A practical, personalised meal planning tool built on the philosophy of Mobile Dietitian — evidence-based nourishment that actually works for how you live.</p>
 </div>
 
-
+<div class="api-banner" id="apiBanner">
+  <strong>One-time setup:</strong> This tool needs your Anthropic API key. Get yours at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — paste it below. It saves in your browser only and is never shared.
+  <div class="api-key-row">
+    <input type="password" class="api-key-input" id="apiKeyInput" placeholder="sk-ant-..." autocomplete="off">
+    <button class="api-save-btn" onclick="saveKey()">Save key</button>
+  </div>
+</div>
 
 <!-- MODE SELECTOR -->
 <div class="mode-section">
@@ -223,8 +229,8 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
   <div class="mode-cards">
     <div class="mode-card" id="modeCard0" onclick="setMode(0)">
       <div class="mode-icon">🍽️</div>
-      <div class="mode-label">Improve a recipe</div>
-      <div class="mode-desc">Share a recipe you already love — I'll help make it more nourishing</div>
+      <div class="mode-label">Find or improve a recipe</div>
+      <div class="mode-desc">Share what you have or a recipe you love — I'll help you find something or make it more nourishing.</div>
     </div>
     <div class="mode-card active" id="modeCard1" onclick="setMode(1)">
       <div class="mode-icon">📅</div>
@@ -285,7 +291,7 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
   <!-- No-cook days selector -->
   <div class="section" id="noCookSection">
     <div class="section-label">How many nights would you prefer not to cook?</div>
-    <div class="section-hint">On no-cook nights, I can suggest leftovers, batch cook meals, ready-made options, or eating out — select all that apply.</div>
+    <div class="section-hint">On no-cook nights, I'll suggest healthier ready-made meals, eating out choices, or convenience options with guidance on what to look for.</div>
     <div class="chips">
       <div class="chip nocook-chip" data-g="nocook" onclick="one(this);updateNoCookInfo()">0 — I'll cook every night</div>
       <div class="chip nocook-chip" data-g="nocook" onclick="one(this);updateNoCookInfo()">1 night</div>
@@ -296,10 +302,9 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
     <div id="noCookTypeSection" style="display:none;margin-top:12px;">
       <div class="section-hint" style="margin-bottom:8px;">On those nights, what works best for you? (select all that apply)</div>
       <div class="chips">
-        <div class="chip" data-g="nocooktype" onclick="tog(this)">Leftovers from a previous night</div>
-        <div class="chip" data-g="nocooktype" onclick="tog(this)">From a batch cook</div>
         <div class="chip" data-g="nocooktype" onclick="tog(this)">Ready-made meals (supermarket / delivery)</div>
         <div class="chip" data-g="nocooktype" onclick="tog(this)">Eating out / takeaway</div>
+        <div class="chip" data-g="nocooktype" onclick="tog(this)">Mix of both</div>
       </div>
     </div>
   </div>
@@ -339,6 +344,7 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
   <div class="section">
     <div class="section-label">I would like more of</div>
     <div class="chips">
+      <div class="chip all-chip" data-g="more" data-all="true" onclick="toggleAll(this)">All of the above</div>
       <div class="chip" data-g="more" onclick="tog(this)">Vegetables</div>
       <div class="chip" data-g="more" onclick="tog(this)">Legumes</div>
       <div class="chip" data-g="more" onclick="tog(this)">Oily fish (omega-3)</div>
@@ -349,13 +355,13 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
       <div class="chip" data-g="more" onclick="tog(this)">Fibre</div>
       <div class="chip" data-g="more" onclick="tog(this)">Low GI wholegrains</div>
       <div class="chip" data-g="more" onclick="tog(this)">Healthy fats</div>
-      <div class="chip all-chip" data-g="more" data-all="true" onclick="toggleAll(this)">All of the above</div>
     </div>
   </div>
 
   <div class="section">
     <div class="section-label">I would like less of</div>
     <div class="chips">
+      <div class="chip all-chip" data-g="less" data-all="true" onclick="toggleAll(this)">All of the above</div>
       <div class="chip" data-g="less" onclick="tog(this)">Salt</div>
       <div class="chip" data-g="less" onclick="tog(this)">Takeaway meals</div>
       <div class="chip" data-g="less" onclick="tog(this)">Ultra-processed foods</div>
@@ -364,7 +370,6 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
       <div class="chip" data-g="less" onclick="tog(this)">Saturated fat</div>
       <div class="chip" data-g="less" onclick="tog(this)">Red meat</div>
       <div class="chip" data-g="less" onclick="tog(this)">High GI carbohydrates</div>
-      <div class="chip all-chip" data-g="less" data-all="true" onclick="toggleAll(this)">All of the above</div>
     </div>
   </div>
 
@@ -418,7 +423,7 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
       <div class="chip dislike-chip" data-g="dislike" onclick="tog(this)">Leafy greens</div>
       <div class="chip dislike-chip" data-g="dislike" onclick="tog(this)">Cooked vegetables</div>
       <div class="chip dislike-chip" data-g="dislike" onclick="tog(this)">Spicy foods</div>
-
+      <div class="chip dislike-chip" data-g="dislike" onclick="tog(this)">Offal / organ meats</div>
     </div>
   </div>
 
@@ -445,13 +450,7 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
       <div class="chip" data-g="time" onclick="one(this)">15 to 30 mins</div>
       <div class="chip" data-g="time" onclick="one(this)">30 to 60 mins</div>
       <div class="chip" data-g="time" onclick="one(this)">Over 60 mins</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">Batch cooking</div>
-    <div class="chips">
-      <div class="chip" data-g="batchcook" onclick="tog(this)">Happy to batch cook on weekends</div>
+      <div class="chip" data-g="time" onclick="one(this)">Happy to batch cook on weekends</div>
     </div>
   </div>
 
@@ -563,7 +562,7 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
 </div>
 
 <script>
-
+var apiKey = '';
 var currentMode = 1;
 var lastProfile = {};
 var chatHistory = [];
@@ -582,6 +581,7 @@ VOICE & TONE (Michelle's style):
 
 CORE PHILOSOPHY:
 - Nourishment over restriction. Add before you remove.
+- Don't assume the worst version of an ingredient. Where a "Nourished Upgrade" or "Condition note" involves a swap, phrase it conditionally (e.g. "if using X, Y is a lower-GI/lower-sodium option") rather than stating it as though the person is definitely using the less nourishing version.
 - Low GI carbohydrates are the foundation of every meal — not optional. Every meal should have a low GI carbohydrate base (e.g. oats, legumes, basmati rice, sweet potato, wholegrain bread, freekeh, barley, pasta al dente). If someone is new to low GI eating, suggest a "half and half" approach: half their usual carb + half a low GI alternative to start.
 - Aim 20–30g protein per meal. Plant proteins also provide fibre — double benefit.
 - Half the plate = colourful variety of vegetables.
@@ -658,22 +658,7 @@ Lemon Ricotta Crepes with Blackberry Compote — https://www.cookwithjess.com.au
 Oregano Beef Flatbreads with Tahini Yoghurt — https://www.cookwithjess.com.au/heart-healthy-catalogue/oregano-beef-with-roasted-radish-pickled-cucumber-tahini-yoghurt-flatbreads
 Cocoa Crunch Energy Bites — https://www.cookwithjess.com.au/snacks-breakfast-catalogue/cocoa-crunch-energy-bites
 
-RECIPE LINK RULES — CRITICAL:
-Every recipe must link somewhere useful. Never link to a homepage or category page. Never fabricate a direct recipe URL.
-
-For MOBILE DIETITIAN and COOK WITH JESS: only use the exact URLs listed above. Do not invent URLs.
-
-For ALL OTHER SITES (RecipeTin Eats, Taste, Donna Hay, Maggie Beer, Taste.com.au, SBS Food, ABC Everyday, etc):
-- Always use a Google site-search link in this exact format:
-  https://www.google.com/search?q=site:recipetineats.com+lemon+chicken+pasta
-  Replace the domain and search terms to match the site and recipe name (use + between words, no spaces)
-- Examples:
-  RecipeTin Eats lemon chicken: https://www.google.com/search?q=site:recipetineats.com+lemon+chicken
-  Taste.com.au pumpkin soup: https://www.google.com/search?q=site:taste.com.au+pumpkin+soup
-  Donna Hay salmon pasta: https://www.google.com/search?q=site:donnahay.com.au+salmon+pasta
-  Maggie Beer lamb: https://www.google.com/search?q=site:maggiebeer.com.au+lamb
-- Label all search links as: <a href="..." class="recipe-link">Recipe →</a>
-- This ensures every link works and leads directly to the right recipe
+For Maggie Beer, Donna Hay, RecipeTin Eats, Taste.com.au, Australian Women's Weekly, Healthy Food Guide, SBS Food, ABC Everyday: use real recipes that genuinely exist on those sites. If uncertain of a specific URL, link to the homepage of that site rather than risk a broken link.
 
 LUNCH PHILOSOPHY — CRITICAL:
 Lunch must be genuinely easy — something people can prepare before work (5–10 minutes of assembly, not cooking) or grab quickly. Think: build a sandwich, throw ingredients in a bowl, open a tin. Lunches should not require cooking at lunchtime.
@@ -692,13 +677,10 @@ Expand your lunch recipe search to include: Maggie Beer (maggiebeer.com.au), Rec
 
 NO-COOK DINNER GUIDANCE:
 When a dinner is a no-cook night, use the <div class="no-cook-meal"> format. Provide:
-- A specific, actionable suggestion (not vague — e.g. "YouFoodz Chicken Tikka Masala" or "Leftover Wednesday chicken tray bake — slice cold over a green salad with sourdough" or "Batch-cooked lentil soup from the freezer — reheat and serve with grainy toast")
+- A specific, actionable suggestion (not vague — e.g. "YouFoodz Chicken Tikka Masala" or "Grilled fish at a Thai restaurant with steamed rice and stir-fried vegetables")
 - A brief "Why this works" explanation using the <div class="no-cook-why"> element
-- Vary the no-cook dinner types across the week based on the user's no-cook preference. If multiple types are selected, rotate across them:
-  * "Leftovers from a previous night" — reference a specific meal from earlier in the plan, suggest how to serve it differently if needed
-  * "From a batch cook" — suggest a specific batch-cooked component from the plan (e.g. soups, grains, legumes, roasted veg) and how to assemble it into a quick dinner
-  * "Ready-made meals" — prefer YouFoodz (available in supermarkets), Soulara (delivery), Garden of Goodness (delivery) — look for meals with whole food ingredients, minimal additives, adequate protein, low GI carbs, half the meal being colourful vegetables, low sodium (ideally under 600mg per serve)
-  * "Eating out / takeaway" — suggest cuisines with naturally healthier options (Japanese, Vietnamese, Thai, Greek/Mediterranean, Indian with careful choices). Always suggest swaps: e.g. swap hot chips for salad or steamed rice, ask for dressing on the side, choose grilled over fried, choose broth-based over cream-based
+- For ready-made meals: prefer YouFoodz (available in supermarkets), Soulara (delivery), Garden of Goodness (delivery) — look for meals with whole food ingredients, minimal additives, adequate protein, low GI carbs, half the meal being colourful vegetables, low sodium (ideally under 600mg per serve)
+- For eating out: suggest cuisines with naturally healthier options (Japanese, Vietnamese, Thai, Greek/Mediterranean, Indian with careful choices) over high-fried cuisines. Frame any swap as an option rather than assuming what they'll order, e.g. "if chips come with the dish, salad or steamed rice is a lighter option", "dressing on the side if you'd like more control over it", "grilled is usually the lighter choice where it's on the menu"
 - For all no-cook nights: note that low GI carbs can be harder — offer practical tips (e.g. choose sushi rice over fried rice, ask for wholegrain bread at a café, choose legume-based dishes)
 - Breakfast and lunch on no-cook days remain normal meal suggestions unless the user has specified they want to buy all meals
 
@@ -711,7 +693,7 @@ MEDICAL CONDITIONS — adjust recipes and upgrades accordingly:
 - Anxiety / Depression / Cognitive decline: Mediterranean/MIND diet pattern. Prioritise omega-3 fish, leafy greens, berries, olive oil, wholegrains, legumes, fermented foods. Minimise ultra-processed foods. Note that dietary patterns may support mental wellbeing — AHPRA language only.
 - Menopause / perimenopause: calcium, vitamin D context, phytoestrogens (soy, flaxseed) where appropriate, omega-3s, anti-inflammatory foods, protein for muscle maintenance.
 
-If cooking for someone else with a condition: make the whole-household plan suit the condition, and add a "Condition note" in each day with simple adaptations (e.g. "If serving someone with diabetes, swap jasmine rice for basmati or cauliflower rice").
+If cooking for someone else with a condition: make the whole-household plan suit the condition, and add a "Condition note" in each day with simple adaptations. Phrase these conditionally rather than assuming what the household already has — e.g. "If serving someone with diabetes and the rice is a higher-GI variety like jasmine, basmati or cauliflower rice are lower-GI options" rather than assuming they're using jasmine.
 
 FODMAP:
 - Elimination phase: strictly avoid ALL FODMAPs. Suggest low FODMAP swaps (garlic-infused oil instead of garlic, spring onion tops instead of onion, lactose-free dairy, canned lentils rinsed thoroughly in small amounts only, etc.)
@@ -760,14 +742,22 @@ YOUR JOB: Look at the recipe provided and have a coaching conversation. One mess
 APPROACH (follow this order across the conversation):
 1. Start with genuine positives — what this recipe already does well and why those things matter. Be specific.
 2. Identify the single most impactful improvement opportunity (choose from: low GI carb foundation, protein, plant variety, healthy fats, fibre, sodium, ultra-processed ingredients, fermented foods, omega-3s)
-3. Make ONE specific, practical suggestion — not "add protein" but "would you consider swapping the oil for extra virgin olive oil? It's higher in polyphenols which may support heart health and has a lovely flavour in this dish"
-4. Ask a single coaching question to explore their interest or readiness
-5. Based on their response, either go deeper on that change or move to the next opportunity
-6. After 2–3 suggestions, offer to find a complementary side dish recipe or relevant Mobile Dietitian tip
+3. If the recipe names that ingredient generically, without stating a specific type, brand, or quality (see ASK-BEFORE-ASSUMING below), ask what type they're using as your coaching question for this turn — do not suggest a swap yet.
+4. Once you know what they're using: if it's already a nourishing choice, say so and briefly explain why it's good (no swap needed) — then move to the next opportunity. If there's room to improve, make ONE specific, practical suggestion, phrased conditionally and not presumptuously — e.g. "If it's a regular vegetable oil blend, would you consider swapping to extra virgin olive oil? It's higher in polyphenols which may support heart health" or "If you're using regular soy sauce, would a reduced-salt version work for you? Similar flavour, less sodium."
+5. Ask a single coaching question to explore their interest or readiness (or fold this into step 3/4 above — never ask more than one question per message)
+6. Based on their response, either go deeper on that change or move to the next opportunity
+7. After 2–3 suggestions, offer to find a complementary side dish recipe or relevant Mobile Dietitian tip
 
-KEY RULES:
-- Low GI carbs are the foundation. If the recipe has high GI carbs (white rice, white bread, regular pasta), this is almost always the first or second suggestion. Suggest the half-and-half approach for beginners.
-- Fish: always prioritise omega-3 rich fish. If recipe uses white fish, ask if they'd consider salmon or mackerel occasionally.
+ASK-BEFORE-ASSUMING — this is a core rule, not optional:
+Recipes often name an ingredient generically — "rice," "bread," "pasta," "oil," "soy sauce," "stock," "cheese," "salt" — without saying what type, brand, or quality it is. Never assume the generic name means the less nourishing version. Always ask what type they're using first. This applies especially to:
+- Carbs: rice, bread, pasta — could already be brown/wholegrain/low GI, or could be white/refined. Ask before suggesting a low GI swap or the half-and-half approach.
+- Oils and fats: "oil," "butter," "margarine" — could already be extra virgin olive oil, or could be a refined vegetable oil blend. Ask before suggesting a swap.
+- Sodium sources: soy sauce, stock/stock cubes, table salt, sauces/marinades — could already be reduced-salt or low-sodium, or could be regular. Ask before flagging sodium as the improvement opportunity.
+- Fish and protein: if the recipe just says "fish" or "protein" without naming the type, ask which fish or cut before assuming it's not omega-3 rich or is a fattier cut.
+- Packaged/processed items: canned goods, condiments, packet sauces — could already be a whole-food, low-additive version. Ask what brand or type before assuming ultra-processed.
+Once you know what they're actually using, respond one of two ways: (a) if it's already a good choice, affirm it warmly and explain briefly why it works — do not suggest changing it; (b) if there's room to improve, suggest the swap gently and conditionally ("if you're using X, would you consider Y?"), never as a flat instruction assuming they're using the lesser option.
+
+OTHER KEY RULES:
 - Legumes: where appropriate, suggest replacing 1/3 of animal protein with lentils/chickpeas to increase fibre and plant diversity while maintaining protein. Explain the double benefit.
 - Soy/phytoestrogens: where appropriate for menopause context, gently raise "have you thought about adding edamame or tofu here? Soy foods contain phytoestrogens which may support hormonal balance during menopause."
 - Anti-inflammatory foods: olive oil, fatty fish, berries, leafy greens, nuts, turmeric — raise these naturally in context.
@@ -776,8 +766,19 @@ KEY RULES:
 
 // ─── INIT ──────────────────────────────────────────────────────────
 
-function init() { setMode(1); }
+function init() {
+  try { apiKey = localStorage.getItem('nourished_api_key') || ''; } catch(e) {}
+  if (apiKey) document.getElementById('apiBanner').style.display = 'none';
+  setMode(1);
+}
 
+function saveKey() {
+  var val = document.getElementById('apiKeyInput').value.trim();
+  if (!val.startsWith('sk-ant-')) { alert('That does not look like a valid Anthropic API key — it should start with sk-ant-'); return; }
+  apiKey = val;
+  try { localStorage.setItem('nourished_api_key', apiKey); } catch(e) {}
+  document.getElementById('apiBanner').style.display = 'none';
+}
 
 // ─── MODE ──────────────────────────────────────────────────────────
 
@@ -855,7 +856,7 @@ function updateFodmapPhase(el) {
 // ─── RECIPE CHAT ───────────────────────────────────────────────────
 
 function startRecipeChat() {
-  
+  if (!apiKey) { showError('errorMsg0', 'Please enter your Anthropic API key at the top of the page first.'); document.getElementById('apiBanner').style.display='block'; return; }
   var recipe = document.getElementById('recipeInput').value.trim();
   if (!recipe) { showError('errorMsg0', 'Please paste a recipe, some ingredients, or a link first.'); return; }
   chatHistory = [];
@@ -888,10 +889,10 @@ async function sendToChat(userMsg, isFirst) {
   var loadingEl = addChatBubble('bot', '');
   loadingEl.innerHTML = '<div class="chat-msg-label">Nourished Coach</div><span style="color:var(--ink-light);font-style:italic;">Thinking...</span>';
   try {
-    var resp = await fetch('/api/chat', {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
-      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01'},
-      body:JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:800, system:SYSTEM_RECIPE, messages:chatHistory })
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800, system:SYSTEM_RECIPE, messages:chatHistory })
     });
     if (!resp.ok) { var e=await resp.json().catch(()=>({})); throw new Error((e.error&&e.error.message)||'API error '+resp.status); }
     var data = await resp.json();
@@ -938,7 +939,6 @@ function buildProfile() {
     dislike: sel('dislike').join(', ') || 'None',
     gradual: sel('gradual').join(', ') || 'None',
     time: sel('time')[0] || 'Not specified',
-    batchcook: sel('batchcook')[0] || '',
     skill: sel('skill')[0] || 'Not specified',
     budget: sel('budget')[0] || 'Not specified',
     leftovers: sel('leftovers')[0] || 'Not specified',
@@ -970,7 +970,6 @@ function buildPrompt(p) {
   prompt += 'Dislikes (avoid entirely): ' + p.dislike + '\n';
   prompt += 'Gradually building (small amounts, 1–2 meals only): ' + p.gradual + '\n';
   prompt += 'Cooking time: ' + p.time + '\n';
-  if (p.batchcook) prompt += 'Batch cooking: Happy to batch cook on weekends\n';
   prompt += 'Skill level: ' + p.skill + '\n';
   prompt += 'Budget: ' + p.budget + '\n';
   prompt += 'Leftovers: ' + p.leftovers + '\n';
@@ -980,13 +979,14 @@ function buildPrompt(p) {
   prompt += '- Every cooked dinner must have a clear low GI carbohydrate identified as the foundation\n';
   prompt += '- If budget is tight, mention dried legumes tip on at least one meal (soak 8hrs, cook thoroughly, freeze portions)\n';
   prompt += '- Prioritise omega-3 fish (salmon, sardines, mackerel) over white fish when suggesting fish\n';
-  prompt += '- CRITICAL: Only 1-2 Mobile Dietitian and 1-2 Cook With Jess recipes across the entire 7-day plan. Use Maggie Beer, RecipeTin Eats, Donna Hay and other Australian sites for the majority across all meals.\n';
+  prompt += '- CRITICAL: Only 1-2 Mobile Dietitian and 1-2 Cook With Jess recipes across the entire 7-day plan. Use Maggie Beer, RecipeTin Eats, Donna Hay and other Australian sites for the majority across all meals.
+';
   prompt += '- Respond with valid HTML only using the exact format specified in your instructions\n';
   return prompt;
 }
 
 async function generate(customPrompt) {
-  
+  if (!apiKey) { showError('errorMsg1','Please enter your Anthropic API key at the top of the page first.'); document.getElementById('apiBanner').style.display='block'; return; }
   var btn = document.getElementById('genBtn');
   btn.disabled = true;
   btn.innerHTML = '<div class="dots"><span></span><span></span><span></span></div> Building your plan...';
@@ -1010,10 +1010,10 @@ async function generate(customPrompt) {
   }
 
   try {
-    var resp = await fetch('/api/chat',{
+    var resp = await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:3200, stream:false, system:SYSTEM_PLAN, messages:[{role:'user',content:userPrompt}] })
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:3200, stream:true, system:SYSTEM_PLAN, messages:[{role:'user',content:userPrompt}] })
     });
     if (!resp.ok) {
       var err = await resp.json().catch(function(){return{};});
@@ -1021,8 +1021,24 @@ async function generate(customPrompt) {
       if (resp.status===429) throw new Error('Too many requests — please wait a moment and try again.');
       throw new Error((err.error&&err.error.message)||'API error '+resp.status);
     }
-    var data = await resp.json();
-    var fullText = data.content.map(function(b){return b.text||'';}).join('');
+    var reader = resp.body.getReader();
+    var dec = new TextDecoder();
+    var buf = '', fullText = '';
+    while (true) {
+      var chunk = await reader.read();
+      if (chunk.done) break;
+      buf += dec.decode(chunk.value,{stream:true});
+      var lines = buf.split('\n');
+      buf = lines.pop();
+      for (var i=0;i<lines.length;i++) {
+        var line = lines[i];
+        if (line.startsWith('data: ')) {
+          var d = line.slice(6).trim();
+          if (d==='[DONE]') break;
+          try { var j=JSON.parse(d); if (j.type==='content_block_delta'&&j.delta&&j.delta.text) fullText+=j.delta.text; } catch(e){}
+        }
+      }
+    }
     var cleaned = fullText.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
     planCard.innerHTML = cleaned;
     document.getElementById('actionBar').classList.add('show');
@@ -1063,7 +1079,7 @@ function submitRedo() {
   if (notes) feedback.push('Extra feedback: '+notes);
   var p = lastProfile;
   var prompt = 'Please create a completely new 7-day Nourished meal plan — clearly different from the previous one.\n\nPROFILE:\n'
-    +'Health conditions: '+p.conditions+'\nNo-cook nights: '+p.nocook+'\nNo-cook type: '+p.nocooktype+'\nBatch cooking: '+(p.batchcook||'No')
+    +'Health conditions: '+p.conditions+'\nNo-cook nights: '+p.nocook+'\nNo-cook type: '+p.nocooktype
     +'\nProteins: '+p.protein+'\nCuisines: '+p.cuisine+'\nMore of: '+p.more+'\nLess of: '+p.less
     +'\nAllergies: '+p.allergy+'\nDislikes: '+p.dislike+'\nGradual: '+p.gradual
     +'\nTime: '+p.time+'\nSkill: '+p.skill+'\nBudget: '+p.budget+'\nLeftovers: '+p.leftovers

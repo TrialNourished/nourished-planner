@@ -215,13 +215,6 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
   <p class="header-sub">A practical, personalised meal planning tool built on the philosophy of Mobile Dietitian — evidence-based nourishment that actually works for how you live.</p>
 </div>
 
-<div class="api-banner" id="apiBanner">
-  <strong>One-time setup:</strong> This tool needs your Anthropic API key. Get yours at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — paste it below. It saves in your browser only and is never shared.
-  <div class="api-key-row">
-    <input type="password" class="api-key-input" id="apiKeyInput" placeholder="sk-ant-..." autocomplete="off">
-    <button class="api-save-btn" onclick="saveKey()">Save key</button>
-  </div>
-</div>
 
 <!-- MODE SELECTOR -->
 <div class="mode-section">
@@ -562,7 +555,6 @@ select.plan-select:focus{outline:none;border-color:var(--green-leaf);}
 </div>
 
 <script>
-var apiKey = '';
 var currentMode = 1;
 var lastProfile = {};
 var chatHistory = [];
@@ -767,17 +759,7 @@ OTHER KEY RULES:
 // ─── INIT ──────────────────────────────────────────────────────────
 
 function init() {
-  try { apiKey = localStorage.getItem('nourished_api_key') || ''; } catch(e) {}
-  if (apiKey) document.getElementById('apiBanner').style.display = 'none';
   setMode(1);
-}
-
-function saveKey() {
-  var val = document.getElementById('apiKeyInput').value.trim();
-  if (!val.startsWith('sk-ant-')) { alert('That does not look like a valid Anthropic API key — it should start with sk-ant-'); return; }
-  apiKey = val;
-  try { localStorage.setItem('nourished_api_key', apiKey); } catch(e) {}
-  document.getElementById('apiBanner').style.display = 'none';
 }
 
 // ─── MODE ──────────────────────────────────────────────────────────
@@ -856,7 +838,6 @@ function updateFodmapPhase(el) {
 // ─── RECIPE CHAT ───────────────────────────────────────────────────
 
 function startRecipeChat() {
-  if (!apiKey) { showError('errorMsg0', 'Please enter your Anthropic API key at the top of the page first.'); document.getElementById('apiBanner').style.display='block'; return; }
   var recipe = document.getElementById('recipeInput').value.trim();
   if (!recipe) { showError('errorMsg0', 'Please paste a recipe, some ingredients, or a link first.'); return; }
   chatHistory = [];
@@ -889,9 +870,9 @@ async function sendToChat(userMsg, isFirst) {
   var loadingEl = addChatBubble('bot', '');
   loadingEl.innerHTML = '<div class="chat-msg-label">Nourished Coach</div><span style="color:var(--ink-light);font-style:italic;">Thinking...</span>';
   try {
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+    var resp = await fetch('/api/chat', {
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800, system:SYSTEM_RECIPE, messages:chatHistory })
     });
     if (!resp.ok) { var e=await resp.json().catch(()=>({})); throw new Error((e.error&&e.error.message)||'API error '+resp.status); }
@@ -979,14 +960,12 @@ function buildPrompt(p) {
   prompt += '- Every cooked dinner must have a clear low GI carbohydrate identified as the foundation\n';
   prompt += '- If budget is tight, mention dried legumes tip on at least one meal (soak 8hrs, cook thoroughly, freeze portions)\n';
   prompt += '- Prioritise omega-3 fish (salmon, sardines, mackerel) over white fish when suggesting fish\n';
-  prompt += '- CRITICAL: Only 1-2 Mobile Dietitian and 1-2 Cook With Jess recipes across the entire 7-day plan. Use Maggie Beer, RecipeTin Eats, Donna Hay and other Australian sites for the majority across all meals.
-';
+  prompt += '- CRITICAL: Only 1-2 Mobile Dietitian and 1-2 Cook With Jess recipes across the entire 7-day plan. Use Maggie Beer, RecipeTin Eats, Donna Hay and other Australian sites for the majority across all meals.\n';
   prompt += '- Respond with valid HTML only using the exact format specified in your instructions\n';
   return prompt;
 }
 
 async function generate(customPrompt) {
-  if (!apiKey) { showError('errorMsg1','Please enter your Anthropic API key at the top of the page first.'); document.getElementById('apiBanner').style.display='block'; return; }
   var btn = document.getElementById('genBtn');
   btn.disabled = true;
   btn.innerHTML = '<div class="dots"><span></span><span></span><span></span></div> Building your plan...';
@@ -1010,35 +989,18 @@ async function generate(customPrompt) {
   }
 
   try {
-    var resp = await fetch('https://api.anthropic.com/v1/messages',{
+    var resp = await fetch('/api/chat',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:3200, stream:true, system:SYSTEM_PLAN, messages:[{role:'user',content:userPrompt}] })
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:3200, system:SYSTEM_PLAN, messages:[{role:'user',content:userPrompt}] })
     });
     if (!resp.ok) {
       var err = await resp.json().catch(function(){return{};});
-      if (resp.status===401) throw new Error('Invalid API key. Please check and re-enter your key.');
       if (resp.status===429) throw new Error('Too many requests — please wait a moment and try again.');
       throw new Error((err.error&&err.error.message)||'API error '+resp.status);
     }
-    var reader = resp.body.getReader();
-    var dec = new TextDecoder();
-    var buf = '', fullText = '';
-    while (true) {
-      var chunk = await reader.read();
-      if (chunk.done) break;
-      buf += dec.decode(chunk.value,{stream:true});
-      var lines = buf.split('\n');
-      buf = lines.pop();
-      for (var i=0;i<lines.length;i++) {
-        var line = lines[i];
-        if (line.startsWith('data: ')) {
-          var d = line.slice(6).trim();
-          if (d==='[DONE]') break;
-          try { var j=JSON.parse(d); if (j.type==='content_block_delta'&&j.delta&&j.delta.text) fullText+=j.delta.text; } catch(e){}
-        }
-      }
-    }
+    var data = await resp.json();
+    var fullText = data.content.map(function(b){return b.text||'';}).join('');
     var cleaned = fullText.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
     planCard.innerHTML = cleaned;
     document.getElementById('actionBar').classList.add('show');
